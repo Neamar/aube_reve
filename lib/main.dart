@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -13,36 +15,49 @@ class MyApp extends StatelessWidget {
 }
 
 class DiceRollerState extends State<DiceRoller> {
-  int diceCount = 5;
-  int successThreshold = 4;
+  int attributeValue = 5;
+  int skillValue = 4;
   int currentResult = -1;
 
   incrementDiceCount() {
     setState(() {
-      diceCount++;
+      attributeValue++;
     });
   }
 
   decrementDiceCount() {
     setState(() {
-      if (diceCount > 0) {
-        diceCount--;
+      if (attributeValue > 0) {
+        attributeValue--;
       }
     });
   }
 
   incrementThreshold() {
     setState(() {
-      if (successThreshold < 10) {
-        successThreshold++;
+      if (skillValue < 10) {
+        skillValue++;
       }
     });
   }
 
   decrementThreshold() {
     setState(() {
-      if (successThreshold > 0) {
-        successThreshold--;
+      if (skillValue > 0) {
+        skillValue--;
+      }
+    });
+  }
+
+  doRoll() {
+    setState(() {
+      currentResult = 0;
+      var random = Random();
+      for (int i = 0; i < attributeValue; i++) {
+        int roll = random.nextInt(10) + 1;
+        if (roll > 10 - skillValue) {
+          currentResult++;
+        }
       }
     });
   }
@@ -60,21 +75,30 @@ class DiceRollerState extends State<DiceRoller> {
             children: <Widget>[
               Counter(
                   title: "Caractéristique",
-                  currentValue: diceCount,
+                  currentValue: attributeValue,
                   incrementFn: incrementDiceCount,
                   decrementFn: decrementDiceCount),
               Counter(
                   title: "Compétence",
-                  currentValue: successThreshold,
+                  currentValue: skillValue,
                   incrementFn: incrementThreshold,
                   decrementFn: decrementThreshold,
                   maximum: 10),
-              new Expanded(
-                  child: Center(
-                child: Text('$currentResult',
-                    style: Theme.of(context).textTheme.display4,
-                    textAlign: TextAlign.center),
-              ))
+              Row(children: <Widget>[
+                Expanded(
+                    child: RaisedButton(
+                  color: Theme.of(context).backgroundColor,
+                  child: Text("Roll"),
+                  onPressed: doRoll,
+                ))
+              ]),
+              if (currentResult != -1)
+                new Expanded(
+                    child: Center(
+                  child: Text('$currentResult',
+                      style: Theme.of(context).textTheme.display4,
+                      textAlign: TextAlign.center),
+                ))
             ],
           ),
         ),
@@ -118,7 +142,6 @@ class Counter extends StatelessWidget {
           ),
           Text(
             '$currentValue',
-            textWidthBasis: ,
             style: Theme.of(context).textTheme.display2,
           ),
           RaisedButton(
