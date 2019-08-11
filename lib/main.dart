@@ -19,6 +19,7 @@ class DiceRollerState extends State<DiceRoller> {
   int skillValue = 4;
   int currentResult = -1;
   bool valueJustUpdated = false;
+  int tenCount = 0;
 
   incrementDiceCount() {
     setState(() {
@@ -53,11 +54,15 @@ class DiceRollerState extends State<DiceRoller> {
   doRoll() {
     setState(() {
       currentResult = 0;
+      tenCount = 0;
       var random = Random();
       for (int i = 0; i < attributeValue; i++) {
         int roll = random.nextInt(10) + 1;
         if (roll > 10 - skillValue) {
           currentResult++;
+        }
+        if(roll == 10) {
+          tenCount++;
         }
         valueJustUpdated = true;
       }
@@ -106,10 +111,14 @@ class DiceRollerState extends State<DiceRoller> {
                 duration: new Duration(milliseconds: 200),
                 style: Theme.of(context).textTheme.display1.copyWith(
                     fontSize:
-                        valueJustUpdated ? 135 : 100),
+                        valueJustUpdated ? 135 : 100,
+                    color: tenCount >= 3 ? Colors.green : Colors.black),
                 child: Text(currentResult != -1 ? '$currentResult' : '',
                     textAlign: TextAlign.center),
-              )))
+              ))),
+              Text(
+                currentResult != -1 ? '($tenCount dix)' : '',
+              ),
             ],
           ),
         ),
