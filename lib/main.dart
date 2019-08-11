@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -18,6 +18,7 @@ class DiceRollerState extends State<DiceRoller> {
   int attributeValue = 5;
   int skillValue = 4;
   int currentResult = -1;
+  bool valueJustUpdated = false;
 
   incrementDiceCount() {
     setState(() {
@@ -58,7 +59,14 @@ class DiceRollerState extends State<DiceRoller> {
         if (roll > 10 - skillValue) {
           currentResult++;
         }
+        valueJustUpdated = true;
       }
+    });
+
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        valueJustUpdated = false;
+      });
     });
   }
 
@@ -92,13 +100,16 @@ class DiceRollerState extends State<DiceRoller> {
                   onPressed: doRoll,
                 ))
               ]),
-              if (currentResult != -1)
-                new Expanded(
-                    child: Center(
-                  child: Text('$currentResult',
-                      style: Theme.of(context).textTheme.display4,
-                      textAlign: TextAlign.center),
-                ))
+              new Expanded(
+                  child: Center(
+                      child: AnimatedDefaultTextStyle(
+                duration: new Duration(milliseconds: 200),
+                style: Theme.of(context).textTheme.display1.copyWith(
+                    fontSize:
+                        valueJustUpdated ? 135 : 100),
+                child: Text(currentResult != -1 ? '$currentResult' : '',
+                    textAlign: TextAlign.center),
+              )))
             ],
           ),
         ),
