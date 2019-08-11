@@ -13,9 +13,39 @@ class MyApp extends StatelessWidget {
 }
 
 class DiceRollerState extends State<DiceRoller> {
-  final _diceCount = 5;
-  final _successThreshold = 4;
-  final _currentResult = -1;
+  int diceCount = 5;
+  int successThreshold = 4;
+  int currentResult = -1;
+
+  incrementDiceCount() {
+    setState(() {
+      diceCount++;
+    });
+  }
+
+  decrementDiceCount() {
+    setState(() {
+      if (diceCount > 0) {
+        diceCount--;
+      }
+    });
+  }
+
+  incrementThreshold() {
+    setState(() {
+      if (successThreshold < 10) {
+        successThreshold++;
+      }
+    });
+  }
+
+  decrementThreshold() {
+    setState(() {
+      if (successThreshold > 0) {
+        successThreshold--;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +58,23 @@ class DiceRollerState extends State<DiceRoller> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              Counter("Caractéristique", _diceCount),
-              Counter("Compétence", _successThreshold),
+              Counter(
+                  title: "Caractéristique",
+                  currentValue: diceCount,
+                  incrementFn: incrementDiceCount,
+                  decrementFn: decrementDiceCount),
+              Counter(
+                  title: "Compétence",
+                  currentValue: successThreshold,
+                  incrementFn: incrementThreshold,
+                  decrementFn: decrementThreshold,
+                  maximum: 10),
               new Expanded(
-                child: Center(
-                  child: Text('$_currentResult',
+                  child: Center(
+                child: Text('$currentResult',
                     style: Theme.of(context).textTheme.display4,
                     textAlign: TextAlign.center),
-                )
-              )
+              ))
             ],
           ),
         ),
@@ -51,20 +89,44 @@ class DiceRoller extends StatefulWidget {
 }
 
 class Counter extends StatelessWidget {
+  final incrementFn;
+  final decrementFn;
   final title;
   final currentValue;
+  final maximum;
 
-  Counter(@required this.title, @required this.currentValue);
+  Counter(
+      {@required this.title,
+      @required this.currentValue,
+      @required this.incrementFn,
+      @required this.decrementFn,
+      this.maximum = 50});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Column(children: <Widget>[
-      Text('$title'),
       Text(
-        '$currentValue',
-        style: Theme.of(context).textTheme.display2,
+        '$title',
+        style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.75),
       ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          RaisedButton(
+            onPressed: currentValue > 0 ? decrementFn : null,
+            child: const Text('-'),
+          ),
+          Text(
+            '$currentValue',
+            textWidthBasis: ,
+            style: Theme.of(context).textTheme.display2,
+          ),
+          RaisedButton(
+            onPressed: currentValue < maximum ? incrementFn : null,
+            child: const Text('+', style: TextStyle(fontSize: 20)),
+          ),
+        ],
+      )
     ]);
   }
 }
