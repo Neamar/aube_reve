@@ -24,28 +24,21 @@ class DiceRollerState extends State<DiceRoller> {
         title: Text("Lancer de dés Aube Rêve"),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Column(children: <Widget>[
-              Text('Caractéristique'),
-              Text(
-                '$_diceCount',
-                style: Theme.of(context).textTheme.display2,
-              ),
-            ]),
-            Column(children: <Widget>[
-              Text('Compétence'),
-              Text(
-                '$_successThreshold',
-                style: Theme.of(context).textTheme.display2,
-              ),
-            ]),
-            Text(
-              '$_currentResult',
-              style: Theme.of(context).textTheme.display4,
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              Counter("Caractéristique", _diceCount),
+              Counter("Compétence", _successThreshold),
+              new Expanded(
+                child: Center(
+                  child: Text('$_currentResult',
+                    style: Theme.of(context).textTheme.display4,
+                    textAlign: TextAlign.center),
+                )
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -55,4 +48,23 @@ class DiceRollerState extends State<DiceRoller> {
 class DiceRoller extends StatefulWidget {
   @override
   DiceRollerState createState() => DiceRollerState();
+}
+
+class Counter extends StatelessWidget {
+  final title;
+  final currentValue;
+
+  Counter(@required this.title, @required this.currentValue);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Column(children: <Widget>[
+      Text('$title'),
+      Text(
+        '$currentValue',
+        style: Theme.of(context).textTheme.display2,
+      ),
+    ]);
+  }
 }
