@@ -8,9 +8,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aube Rêve',
-      home: DiceRoller(),
-    );
+        title: 'Aube Rêve',
+        home: DiceRoller(),
+        theme: ThemeData(
+          primaryColor: Colors.purple,
+          backgroundColor: Colors.purpleAccent
+        ));
   }
 }
 
@@ -61,7 +64,7 @@ class DiceRollerState extends State<DiceRoller> {
         if (roll > 10 - skillValue) {
           currentResult++;
         }
-        if(roll == 10) {
+        if (roll == 10) {
           tenCount++;
         }
         valueJustUpdated = true;
@@ -110,14 +113,13 @@ class DiceRollerState extends State<DiceRoller> {
                       child: AnimatedDefaultTextStyle(
                 duration: new Duration(milliseconds: 200),
                 style: Theme.of(context).textTheme.display1.copyWith(
-                    fontSize:
-                        valueJustUpdated ? 135 : 100,
+                    fontSize: valueJustUpdated ? 135 : 100,
                     color: tenCount >= 3 ? Colors.green : Colors.black),
                 child: Text(currentResult != -1 ? '$currentResult' : '',
                     textAlign: TextAlign.center),
               ))),
               Text(
-                currentResult != -1 ? '($tenCount dix)' : '',
+                currentResult != -1 && tenCount >= 2 ? '($tenCount dix)' : '',
               ),
             ],
           ),
