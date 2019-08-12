@@ -114,12 +114,15 @@ class DiceRollerState extends State<DiceRoller> {
                 duration: new Duration(milliseconds: 200),
                 style: Theme.of(context).textTheme.display1.copyWith(
                     fontSize: valueJustUpdated ? 135 : 100,
-                    color: tenCount >= 3 ? Colors.green : Colors.black),
+                    color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
                 child: Text(currentResult != -1 ? '$currentResult' : '',
                     textAlign: TextAlign.center),
               ))),
               Text(
-                currentResult != -1 && tenCount >= 2 ? '($tenCount dix)' : '',
+                currentResult != -1 && tenCount >= 2 ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : '')) : '',
+                style: TextStyle(
+                    color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
+                )
               ),
             ],
           ),
