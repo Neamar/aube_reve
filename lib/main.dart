@@ -78,6 +78,56 @@ class DiceRollerState extends State<DiceRoller> {
 
   @override
   Widget build(BuildContext context) {
+    var tree = <Widget>[
+      Counter(
+          title: "Caractéristique",
+          currentValue: attributeValue,
+          incrementFn: incrementDiceCount,
+          decrementFn: decrementDiceCount),
+      Counter(
+          title: "Compétence",
+          currentValue: skillValue,
+          incrementFn: incrementThreshold,
+          decrementFn: decrementThreshold,
+          maximum: 10),
+      Row(children: <Widget>[
+        Expanded(
+            child: RaisedButton(
+              color: Theme.of(context).primaryColor,
+              textColor: Colors.white,
+              child: Text("Roll"),
+              onPressed: doRoll,
+            ))
+      ]),
+      ];
+
+      if(currentResult != - 1) {
+        tree.addAll(<Widget>[
+          Expanded(
+              child: Center(
+                  child: AnimatedDefaultTextStyle(
+                    duration: new Duration(milliseconds: 200),
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .display1
+                        .copyWith(
+                        fontSize: valueJustUpdated ? 135 : 100,
+                        color: tenCount >= 3 ? Colors.purpleAccent : Colors
+                            .black),
+                    child: Text(currentResult != -1 ? '$currentResult' : '',
+                        textAlign: TextAlign.center),
+                  ))),
+          Text(
+              currentResult != -1 && tenCount >= 2
+                  ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
+                  : '',
+              style: TextStyle(
+                color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
+              )),
+        ]);
+      };
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Lancer de dés Aube Rêve"),
@@ -86,45 +136,7 @@ class DiceRollerState extends State<DiceRoller> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            children: <Widget>[
-              Counter(
-                  title: "Caractéristique",
-                  currentValue: attributeValue,
-                  incrementFn: incrementDiceCount,
-                  decrementFn: decrementDiceCount),
-              Counter(
-                  title: "Compétence",
-                  currentValue: skillValue,
-                  incrementFn: incrementThreshold,
-                  decrementFn: decrementThreshold,
-                  maximum: 10),
-              Row(children: <Widget>[
-                Expanded(
-                    child: RaisedButton(
-                  color: Theme.of(context).primaryColor,
-                  textColor: Colors.white,
-                  child: Text("Roll"),
-                  onPressed: doRoll,
-                ))
-              ]),
-              Expanded(
-                  child: Center(
-                      child: AnimatedDefaultTextStyle(
-                duration: new Duration(milliseconds: 200),
-                style: Theme.of(context).textTheme.display1.copyWith(
-                    fontSize: valueJustUpdated ? 135 : 100,
-                    color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
-                child: Text(currentResult != -1 ? '$currentResult' : '',
-                    textAlign: TextAlign.center),
-              ))),
-              Text(
-                  currentResult != -1 && tenCount >= 2
-                      ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
-                      : '',
-                  style: TextStyle(
-                    color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
-                  )),
-            ],
+            children: tree
           ),
         ),
       ),
