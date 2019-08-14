@@ -11,9 +11,7 @@ class MyApp extends StatelessWidget {
         title: 'Aube Rêve',
         home: DiceRoller(),
         theme: ThemeData(
-          primaryColor: Colors.purple,
-          backgroundColor: Colors.purpleAccent
-        ));
+            primaryColor: Colors.purple, backgroundColor: Colors.purpleAccent));
   }
 }
 
@@ -103,12 +101,13 @@ class DiceRollerState extends State<DiceRoller> {
               Row(children: <Widget>[
                 Expanded(
                     child: RaisedButton(
-                  color: Theme.of(context).backgroundColor,
+                  color: Theme.of(context).primaryColor,
+                  textColor: Colors.white,
                   child: Text("Roll"),
                   onPressed: doRoll,
                 ))
               ]),
-              new Expanded(
+              Expanded(
                   child: Center(
                       child: AnimatedDefaultTextStyle(
                 duration: new Duration(milliseconds: 200),
@@ -119,11 +118,12 @@ class DiceRollerState extends State<DiceRoller> {
                     textAlign: TextAlign.center),
               ))),
               Text(
-                currentResult != -1 && tenCount >= 2 ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : '')) : '',
-                style: TextStyle(
+                  currentResult != -1 && tenCount >= 2
+                      ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
+                      : '',
+                  style: TextStyle(
                     color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
-                )
-              ),
+                  )),
             ],
           ),
         ),
@@ -159,15 +159,17 @@ class Counter extends StatelessWidget {
         style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.75),
       ),
       Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           RaisedButton(
             onPressed: currentValue > 0 ? decrementFn : null,
             child: const Text('-'),
           ),
-          Text(
-            '$currentValue',
-            style: Theme.of(context).textTheme.display2,
+          Expanded(
+            child: Text(
+              '$currentValue',
+    textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.display2,
+            ),
           ),
           RaisedButton(
             onPressed: currentValue < maximum ? incrementFn : null,
