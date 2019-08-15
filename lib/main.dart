@@ -1,10 +1,11 @@
 import 'dart:math';
 
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(AubeReveApp());
 
-class MyApp extends StatelessWidget {
+class AubeReveApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,6 +26,7 @@ class DiceRollerState extends State<DiceRoller> {
   incrementDiceCount() {
     setState(() {
       attributeValue++;
+      currentResult = -1;
     });
   }
 
@@ -32,6 +34,7 @@ class DiceRollerState extends State<DiceRoller> {
     setState(() {
       if (attributeValue > 0) {
         attributeValue--;
+        currentResult = -1;
       }
     });
   }
@@ -40,6 +43,7 @@ class DiceRollerState extends State<DiceRoller> {
     setState(() {
       if (skillValue < 10) {
         skillValue++;
+        currentResult = -1;
       }
     });
   }
@@ -48,6 +52,7 @@ class DiceRollerState extends State<DiceRoller> {
     setState(() {
       if (skillValue > 0) {
         skillValue--;
+        currentResult = -1;
       }
     });
   }
@@ -93,40 +98,37 @@ class DiceRollerState extends State<DiceRoller> {
       Row(children: <Widget>[
         Expanded(
             child: RaisedButton(
-              color: Theme.of(context).primaryColor,
-              textColor: Colors.white,
-              child: Text("Roll"),
-              onPressed: doRoll,
-            ))
+          color: Theme.of(context).primaryColor,
+          textColor: Colors.white,
+          child: Text("Roll"),
+          onPressed: doRoll,
+        ))
       ]),
-      ];
+    ];
 
-      if(currentResult != - 1) {
-        tree.addAll(<Widget>[
-          Expanded(
-              child: Center(
-                  child: AnimatedDefaultTextStyle(
-                    duration: new Duration(milliseconds: 200),
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .display1
-                        .copyWith(
-                        fontSize: valueJustUpdated ? 135 : 100,
-                        color: tenCount >= 3 ? Colors.purpleAccent : Colors
-                            .black),
-                    child: Text(currentResult != -1 ? '$currentResult' : '',
-                        textAlign: TextAlign.center),
-                  ))),
-          Text(
-              currentResult != -1 && tenCount >= 2
-                  ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
-                  : '',
-              style: TextStyle(
-                color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
-              )),
-        ]);
-      };
+    if (currentResult != -1) {
+      tree.addAll(<Widget>[
+        Expanded(
+            child: Center(
+                child: AnimatedDefaultTextStyle(
+          duration: new Duration(milliseconds: 200),
+          style: Theme.of(context).textTheme.display1.copyWith(
+              fontSize: valueJustUpdated ? 135 : 100,
+              color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
+          child: Text(currentResult != -1 ? '$currentResult' : '',
+              textAlign: TextAlign.center),
+        ))),
+        Text(
+            currentResult != -1 && tenCount >= 2
+                ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
+                : '',
+            style: TextStyle(
+              color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
+            )),
+      ]);
+    } else {
+      tree.add(SimpleBarChart.withSampleData());
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -135,9 +137,7 @@ class DiceRollerState extends State<DiceRoller> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: tree
-          ),
+          child: Column(children: tree),
         ),
       ),
     );
@@ -179,7 +179,7 @@ class Counter extends StatelessWidget {
           Expanded(
             child: Text(
               '$currentValue',
-    textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.display2,
             ),
           ),
@@ -191,4 +191,57 @@ class Counter extends StatelessWidget {
       )
     ]);
   }
+}
+
+class SimpleBarChart extends StatelessWidget {
+  final List<charts.Series> seriesList;
+  final bool animate;
+
+  SimpleBarChart(this.seriesList, {this.animate});
+
+  /// Creates a [BarChart] with sample data and no transition.
+  factory SimpleBarChart.withSampleData() {
+    return new SimpleBarChart(
+      _createSampleData(),
+      // Disable animations for image tests.
+      animate: false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+            child: new charts.BarChart(
+              seriesList,
+              animate: animate,
+           ));
+  }
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
+    final data = [
+      new OrdinalSales('2014', 5),
+      new OrdinalSales('2015', 25),
+      new OrdinalSales('2016', 100),
+      new OrdinalSales('2017', 75),
+    ];
+
+    return [
+      new charts.Series<OrdinalSales, String>(
+        id: 'Sales',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (OrdinalSales sales, _) => sales.year,
+        measureFn: (OrdinalSales sales, _) => sales.sales,
+        data: data,
+      )
+    ];
+  }
+}
+
+/// Sample ordinal data type.
+class OrdinalSales {
+  final String year;
+  final int sales;
+
+  OrdinalSales(this.year, this.sales);
 }
