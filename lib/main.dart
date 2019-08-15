@@ -127,7 +127,10 @@ class DiceRollerState extends State<DiceRoller> {
             )),
       ]);
     } else {
-      tree.add(SimpleBarChart.withSampleData());
+      tree.add(SimpleBarChart(
+        DiceRollStat.createDiceData(attributeValue, skillValue / 10),
+        animate: true,
+      ));
     }
 
     return Scaffold(
@@ -199,15 +202,6 @@ class SimpleBarChart extends StatelessWidget {
 
   SimpleBarChart(this.seriesList, {this.animate});
 
-  /// Creates a [BarChart] with sample data and no transition.
-  factory SimpleBarChart.withSampleData() {
-    return new SimpleBarChart(
-      _createSampleData(),
-      // Disable animations for image tests.
-      animate: false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -217,31 +211,37 @@ class SimpleBarChart extends StatelessWidget {
            ));
   }
 
-  /// Create one series with sample hard coded data.
-  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final data = [
-      new OrdinalSales('2014', 5),
-      new OrdinalSales('2015', 25),
-      new OrdinalSales('2016', 100),
-      new OrdinalSales('2017', 75),
-    ];
+}
+
+/// Sample ordinal data type.
+class DiceRollStat {
+  static int factorial(int n) {
+    return n == 0 ? 1 : n * factorial(n-1);
+  }
+
+  static double getStats(int diceCount, double successProbability, int expectedSuccess) {
+    return factorial(diceCount) / (factorial(expectedSuccess) * factorial(diceCount - expectedSuccess)) * pow(successProbability, expectedSuccess) * pow(1 - successProbability, diceCount - expectedSuccess);
+  }
+
+  static List<charts.Series<DiceRollStat, String>> createDiceData(int diceCount, double successProbability) {
+    final List<DiceRollStat> data = [];
+    for(int i = 0; i <= diceCount; i++) {
+      data.add(new DiceRollStat(i.toString(), getStats(diceCount, successProbability, i)));
+    }
 
     return [
-      new charts.Series<OrdinalSales, String>(
-        id: 'Sales',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        domainFn: (OrdinalSales sales, _) => sales.year,
-        measureFn: (OrdinalSales sales, _) => sales.sales,
+      new charts.Series<DiceRollStat, String>(
+        id: 'Stats',
+        colorFn: (_, __) => charts.MaterialPalette.gray.shadeDefault,
+        domainFn: (DiceRollStat diceStat, _) => diceStat.success,
+        measureFn: (DiceRollStat diceStat, _) => diceStat.proba,
         data: data,
       )
     ];
   }
-}
 
-/// Sample ordinal data type.
-class OrdinalSales {
-  final String year;
-  final int sales;
+  final String success;
+  final double proba;
 
-  OrdinalSales(this.year, this.sales);
+  DiceRollStat(this.success, this.proba);
 }
