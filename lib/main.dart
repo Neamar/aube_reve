@@ -22,7 +22,7 @@ class DiceRollerState extends State<DiceRoller> {
   int currentResult = -1;
   bool valueJustUpdated = false;
   int tenCount = 0;
-
+  String rollDetails = "";
   incrementDiceCount() {
     setState(() {
       attributeValue++;
@@ -61,6 +61,7 @@ class DiceRollerState extends State<DiceRoller> {
     setState(() {
       currentResult = 0;
       tenCount = 0;
+      rollDetails = "";
       var random = Random();
       for (int i = 0; i < attributeValue; i++) {
         int roll = random.nextInt(10) + 1;
@@ -70,8 +71,12 @@ class DiceRollerState extends State<DiceRoller> {
         if (roll == 10) {
           tenCount++;
         }
-        valueJustUpdated = true;
+
+        rollDetails += roll.toString() + ", ";
       }
+
+      valueJustUpdated = true;
+      rollDetails = rollDetails.substring(0, rollDetails.length - 2);
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -115,16 +120,20 @@ class DiceRollerState extends State<DiceRoller> {
           style: Theme.of(context).textTheme.display1.copyWith(
               fontSize: valueJustUpdated ? 135 : 100,
               color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
-          child: Text(currentResult != -1 ? '$currentResult' : '',
+          child: Text('$currentResult',
               textAlign: TextAlign.center),
         ))),
         Text(
-            currentResult != -1 && tenCount >= 2
-                ? ('($tenCount dix)' + (tenCount >= 3 ? ' CRITIQUE' : ''))
-                : '',
+           (tenCount >= 3 ? ' CRITIQUE' : ''),
             style: TextStyle(
-              color: tenCount >= 3 ? Colors.purpleAccent : Colors.black,
-            )),
+              color: Colors.purpleAccent,
+            )
+        ),
+        Text(rollDetails,
+            style: TextStyle(
+              fontSize: 8,
+            )
+        ),
       ]);
     } else {
       tree.add(SimpleBarChart(
