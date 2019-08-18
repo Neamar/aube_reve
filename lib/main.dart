@@ -136,21 +136,18 @@ class DiceRollerState extends State<DiceRoller> {
       List<charts.Series> seriesValues =
           DiceRollStat.createDiceData(attributeValue, skillValue / 10);
       double critProba = 1;
-      if(attributeValue < 3) {
+      if (attributeValue < 3) {
         critProba = 0;
-      }
-      else {
+      } else {
         for (int i = 0; i < 3; i++) {
           critProba -= DiceRollStat.getStats(attributeValue, 1 / 10, i);
         }
       }
 
-      if(attributeValue <= 20) {
-        tree.add(SimpleBarChart(
-          seriesValues,
-          critProba,
-        ));
-      }
+      tree.add(SimpleBarChart(
+        seriesValues,
+        critProba,
+      ));
     }
 
     return Scaffold(
@@ -255,10 +252,15 @@ class DiceRollStat {
     return n <= 0 ? 1 : n * factorial(n - 1);
   }
 
+  static int combine(int n, int k) {
+    if (k == 0) return 1;
+    if (k > n / 2) return combine(n, n - k);
+    return (n * combine(n - 1, k - 1) / k).round();
+  }
+
   static double getStats(
       int diceCount, double successProbability, int expectedSuccess) {
-    return factorial(diceCount) /
-        (factorial(expectedSuccess) * factorial(diceCount - expectedSuccess)) *
+    return combine(diceCount, expectedSuccess) *
         pow(successProbability, expectedSuccess) *
         pow(1 - successProbability, diceCount - expectedSuccess);
   }
