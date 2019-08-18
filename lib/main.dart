@@ -133,10 +133,24 @@ class DiceRollerState extends State<DiceRoller> {
             )),
       ]);
     } else {
-      tree.add(SimpleBarChart(
-        DiceRollStat.createDiceData(attributeValue, skillValue / 10),
-        animate: true,
-      ));
+      List<charts.Series> seriesValues =
+          DiceRollStat.createDiceData(attributeValue, skillValue / 10);
+      double critProba = 1;
+      if(attributeValue < 3) {
+        critProba = 0;
+      }
+      else {
+        for (int i = 0; i < 3; i++) {
+          critProba -= DiceRollStat.getStats(attributeValue, 1 / 10, i);
+        }
+      }
+
+      if(attributeValue <= 20) {
+        tree.add(SimpleBarChart(
+          seriesValues,
+          critProba,
+        ));
+      }
     }
 
     return Scaffold(
@@ -204,23 +218,31 @@ class Counter extends StatelessWidget {
 
 class SimpleBarChart extends StatelessWidget {
   final List<charts.Series> seriesList;
-  final bool animate;
+  final double critProba;
 
-  SimpleBarChart(this.seriesList, {this.animate});
+  SimpleBarChart(this.seriesList, this.critProba);
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
         child: new charts.BarChart(
       seriesList,
-      animate: animate,
+      animate: true,
       primaryMeasureAxis: new charts.NumericAxisSpec(
-            tickProviderSpec: charts.BasicNumericTickProviderSpec(
-              desiredTickCount: 5,
-            ),
-          tickFormatterSpec: charts.BasicNumericTickFormatterSpec((n) => n == 100 ? '100' : (n.round().toString() + "%")),
-        viewport: charts.NumericExtents(0, 100)
-      ),
+          tickProviderSpec: charts.BasicNumericTickProviderSpec(
+            desiredTickCount: 5,
+          ),
+          tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+              (n) => n == 100 ? '100' : (n.round().toString() + "%")),
+          viewport: charts.NumericExtents(0, 100)),
+      behaviors: [
+        new charts.ChartTitle(
+            'Critique : ' + (100 * critProba).toStringAsFixed(2) + '%',
+            behaviorPosition: charts.BehaviorPosition.bottom,
+            titleStyleSpec: charts.TextStyleSpec(fontSize: 8),
+            titleOutsideJustification:
+                charts.OutsideJustification.middleDrawArea),
+      ],
     ));
   }
 }
@@ -228,7 +250,7 @@ class SimpleBarChart extends StatelessWidget {
 /// Sample ordinal data type.
 class DiceRollStat {
   static int factorial(int n) {
-    return n == 0 ? 1 : n * factorial(n - 1);
+    return n <= 0 ? 1 : n * factorial(n - 1);
   }
 
   static double getStats(
