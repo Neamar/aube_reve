@@ -249,6 +249,8 @@ class SimpleBarChart extends StatelessWidget {
 
 /// Sample ordinal data type.
 class DiceRollStat {
+  // Recursive and slow implementation
+  // Overflows for n >= 21
   static int factorial(int n) {
     return n <= 0 ? 1 : n * factorial(n - 1);
   }
