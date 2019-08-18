@@ -23,6 +23,7 @@ class DiceRollerState extends State<DiceRoller> {
   bool valueJustUpdated = false;
   int tenCount = 0;
   String rollDetails = "";
+
   incrementDiceCount() {
     setState(() {
       attributeValue++;
@@ -120,20 +121,16 @@ class DiceRollerState extends State<DiceRoller> {
           style: Theme.of(context).textTheme.display1.copyWith(
               fontSize: valueJustUpdated ? 135 : 100,
               color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
-          child: Text('$currentResult',
-              textAlign: TextAlign.center),
+          child: Text('$currentResult', textAlign: TextAlign.center),
         ))),
-        Text(
-           (tenCount >= 3 ? ' CRITIQUE' : ''),
+        Text((tenCount >= 3 ? ' CRITIQUE' : ''),
             style: TextStyle(
               color: Colors.purpleAccent,
-            )
-        ),
+            )),
         Text(rollDetails,
             style: TextStyle(
               fontSize: 8,
-            )
-        ),
+            )),
       ]);
     } else {
       tree.add(SimpleBarChart(
@@ -214,28 +211,40 @@ class SimpleBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-            child: new charts.BarChart(
-              seriesList,
-              animate: animate,
-           ));
+        child: new charts.BarChart(
+      seriesList,
+      animate: animate,
+      primaryMeasureAxis: new charts.NumericAxisSpec(
+            tickProviderSpec: charts.BasicNumericTickProviderSpec(
+              desiredTickCount: 5,
+            ),
+          tickFormatterSpec: charts.BasicNumericTickFormatterSpec((n) => n.round().toString() + "%"),
+        viewport: charts.NumericExtents(0, 100)
+      ),
+    ));
   }
-
 }
 
 /// Sample ordinal data type.
 class DiceRollStat {
   static int factorial(int n) {
-    return n == 0 ? 1 : n * factorial(n-1);
+    return n == 0 ? 1 : n * factorial(n - 1);
   }
 
-  static double getStats(int diceCount, double successProbability, int expectedSuccess) {
-    return factorial(diceCount) / (factorial(expectedSuccess) * factorial(diceCount - expectedSuccess)) * pow(successProbability, expectedSuccess) * pow(1 - successProbability, diceCount - expectedSuccess);
+  static double getStats(
+      int diceCount, double successProbability, int expectedSuccess) {
+    return factorial(diceCount) /
+        (factorial(expectedSuccess) * factorial(diceCount - expectedSuccess)) *
+        pow(successProbability, expectedSuccess) *
+        pow(1 - successProbability, diceCount - expectedSuccess);
   }
 
-  static List<charts.Series<DiceRollStat, String>> createDiceData(int diceCount, double successProbability) {
+  static List<charts.Series<DiceRollStat, String>> createDiceData(
+      int diceCount, double successProbability) {
     final List<DiceRollStat> data = [];
-    for(int i = 0; i <= diceCount; i++) {
-      data.add(new DiceRollStat(i.toString(), getStats(diceCount, successProbability, i)));
+    for (int i = 0; i <= diceCount; i++) {
+      data.add(new DiceRollStat(
+          i.toString(), getStats(diceCount, successProbability, i)));
     }
 
     return [
@@ -243,7 +252,7 @@ class DiceRollStat {
         id: 'Stats',
         colorFn: (_, __) => charts.MaterialPalette.gray.shadeDefault,
         domainFn: (DiceRollStat diceStat, _) => diceStat.success,
-        measureFn: (DiceRollStat diceStat, _) => diceStat.proba,
+        measureFn: (DiceRollStat diceStat, _) => 100 * diceStat.proba,
         data: data,
       )
     ];
