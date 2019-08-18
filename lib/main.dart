@@ -123,7 +123,7 @@ class DiceRollerState extends State<DiceRoller> {
               color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
           child: Text('$currentResult', textAlign: TextAlign.center),
         ))),
-        Text((tenCount >= 3 ? ' CRITIQUE' : ''),
+        Text((tenCount >= 3 ? ' CRITIQUE ($tenCount)' : ''),
             style: TextStyle(
               color: Colors.purpleAccent,
             )),
@@ -218,7 +218,7 @@ class SimpleBarChart extends StatelessWidget {
             tickProviderSpec: charts.BasicNumericTickProviderSpec(
               desiredTickCount: 5,
             ),
-          tickFormatterSpec: charts.BasicNumericTickFormatterSpec((n) => n.round().toString() + "%"),
+          tickFormatterSpec: charts.BasicNumericTickFormatterSpec((n) => n == 100 ? '100' : (n.round().toString() + "%")),
         viewport: charts.NumericExtents(0, 100)
       ),
     ));
