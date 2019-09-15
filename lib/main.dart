@@ -253,6 +253,7 @@ class DiceRollStat {
   }
 
   // https://math.stackexchange.com/questions/202554/how-do-i-compute-binomial-coefficients-efficiently
+  
   static int combine(int n, int k) {
     if (k == 0) return 1;
     if (k > n / 2) return combine(n, n - k);
