@@ -8,6 +8,8 @@
 .buildlog/
 .history
 .svn/
+_site/
+.jekyll-cache
 
 # IntelliJ related
 *.iml
