@@ -24,6 +24,8 @@ class DiceRollerState extends State<DiceRoller> {
   int tenCount = 0;
   String rollDetails = "";
 
+  List<Choice> choices = <Choice>[];
+
   incrementDiceCount() {
     setState(() {
       attributeValue++;
@@ -78,6 +80,10 @@ class DiceRollerState extends State<DiceRoller> {
 
       valueJustUpdated = true;
       rollDetails = rollDetails.substring(0, rollDetails.length - 2);
+
+      if(choices.length == 0 || (choices[0].attributeValue != attributeValue || choices[0].skillValue != skillValue)) {
+        choices.insert(0, Choice(attributeValue: attributeValue, skillValue: skillValue));
+      }
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -150,9 +156,28 @@ class DiceRollerState extends State<DiceRoller> {
       ));
     }
 
+    List<Widget> actions = [];
+    if(choices.length > 1) {
+      // Only display actions if you have more than one roll
+      actions = [
+        PopupMenuButton<Choice>(
+          onSelected: _selectOldChoice,
+          itemBuilder: (BuildContext context) {
+            return choices.map((Choice choice) {
+              return PopupMenuItem<Choice>(
+                value: choice,
+                child: Text(choice.getName()),
+              );
+            }).toList();
+          },
+        ),
+      ];
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Lancer de dés Aube Rêve"),
+        actions: actions,
       ),
       body: Center(
         child: Padding(
@@ -162,7 +187,27 @@ class DiceRollerState extends State<DiceRoller> {
       ),
     );
   }
+
+  void _selectOldChoice(Choice choice) {
+    setState(() {
+      attributeValue = choice.attributeValue;
+      skillValue = choice.skillValue;
+    });
+  }
 }
+
+
+class Choice {
+  const Choice({this.attributeValue, this.skillValue});
+
+  final int attributeValue;
+  final int skillValue;
+
+  String getName() {
+    return attributeValue.toString() + ' / ' + skillValue.toString();
+  }
+}
+
 
 class DiceRoller extends StatefulWidget {
   @override
@@ -253,7 +298,7 @@ class DiceRollStat {
   }
 
   // https://math.stackexchange.com/questions/202554/how-do-i-compute-binomial-coefficients-efficiently
-  
+
   static int combine(int n, int k) {
     if (k == 0) return 1;
     if (k > n / 2) return combine(n, n - k);
