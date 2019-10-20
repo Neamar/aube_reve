@@ -24,7 +24,7 @@ class DiceRollerState extends State<DiceRoller> {
   int tenCount = 0;
   String rollDetails = "";
 
-  List<Choice> choices = <Choice>[];
+  List<Choice> history = <Choice>[];
 
   incrementDiceCount() {
     setState(() {
@@ -81,9 +81,8 @@ class DiceRollerState extends State<DiceRoller> {
       valueJustUpdated = true;
       rollDetails = rollDetails.substring(0, rollDetails.length - 2);
 
-      if(choices.length == 0 || (choices[0].attributeValue != attributeValue || choices[0].skillValue != skillValue)) {
-        choices.insert(0, Choice(attributeValue: attributeValue, skillValue: skillValue));
-      }
+      // Add to history
+      history.insert(0, Choice(attributeValue: attributeValue, skillValue: skillValue, result: currentResult));
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -157,13 +156,13 @@ class DiceRollerState extends State<DiceRoller> {
     }
 
     List<Widget> actions = [];
-    if(choices.length > 1) {
-      // Only display actions if you have more than one roll
+    if(history.length > 0) {
       actions = [
         PopupMenuButton<Choice>(
+          icon: Icon(Icons.history),
           onSelected: _selectOldChoice,
           itemBuilder: (BuildContext context) {
-            return choices.map((Choice choice) {
+            return history.map((Choice choice) {
               return PopupMenuItem<Choice>(
                 value: choice,
                 child: Text(choice.getName()),
@@ -192,19 +191,22 @@ class DiceRollerState extends State<DiceRoller> {
     setState(() {
       attributeValue = choice.attributeValue;
       skillValue = choice.skillValue;
+      currentResult = -1;
     });
   }
 }
 
 
 class Choice {
-  const Choice({this.attributeValue, this.skillValue});
+  const Choice({this.attributeValue, this.skillValue, this.result});
 
   final int attributeValue;
   final int skillValue;
 
+  final int result;
+
   String getName() {
-    return attributeValue.toString() + ' / ' + skillValue.toString();
+    return attributeValue.toString() + ' / ' + skillValue.toString() + ' (' + result.toString() + ')';
   }
 }
 
