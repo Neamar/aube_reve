@@ -165,7 +165,18 @@ class DiceRollerState extends State<DiceRoller> {
             return history.map((Choice choice) {
               return PopupMenuItem<Choice>(
                 value: choice,
-                child: Text(choice.getName()),
+                child: RichText(
+                  text: TextSpan(
+                    // Note: Styles for TextSpans must be explicitly defined.
+                    // Child text spans will inherit styles from parent
+                    style: Theme.of(context).textTheme.body1,
+                    children: <TextSpan>[
+                      TextSpan(text: choice.getName()),
+                      TextSpan(text: ' '),
+                      new TextSpan(text: choice.getResult(), style: Theme.of(context).textTheme.body1.copyWith(fontSize: 12, color: Colors.black26)),
+                    ],
+                  ),
+                )
               );
             }).toList();
           },
@@ -206,7 +217,11 @@ class Choice {
   final int result;
 
   String getName() {
-    return attributeValue.toString() + ' / ' + skillValue.toString() + ' (' + result.toString() + ')';
+    return attributeValue.toString() + ' / ' + skillValue.toString();
+  }
+
+  String getResult() {
+    return '(' + result.toString() + ')';
   }
 }
 
