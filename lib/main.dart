@@ -68,7 +68,7 @@ class DiceRollerState extends State<DiceRoller> {
       var random = Random();
       for (int i = 0; i < attributeValue; i++) {
         int roll = random.nextInt(10) + 1;
-        if (roll > 10 - skillValue) {
+        if (roll >= 10 - skillValue) {
           currentResult++;
         }
         if (roll == 10) {
