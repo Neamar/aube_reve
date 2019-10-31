@@ -39422,7 +39422,7 @@ $0:function(){var u,t,s,r,q=this.a
 q.x=q.f=0
 u=q.y=""
 for(t=0;s=q.d,t<s;++t){r=C.nB.Me(10)+1
-if(r>10-q.e)++q.f
+if(r>=10-q.e)++q.f
 if(r===10)++q.x
 u=q.y+(C.f.h(r)+", ")
 q.y=u}q.r=!0
