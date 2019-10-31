@@ -68,10 +68,12 @@ class DiceRollerState extends State<DiceRoller> {
       var random = Random();
       for (int i = 0; i < attributeValue; i++) {
         int roll = random.nextInt(10) + 1;
-        if (roll > 10 - skillValue) {
+		//if skill == 3; 7, 8, 9 and 10 are successes. 1 is always a failure
+        if (roll >= 10 - skillValue && roll != 1) {
           currentResult++;
         }
-        if (roll == 10) {
+		//10 counts for critics. if skillvalue = 11, 9 counts too
+        if (roll == 10 || (skillValue > 10 && roll >= 20 - skillValue)) {
           tenCount++;
         }
 
