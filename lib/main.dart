@@ -44,19 +44,15 @@ class DiceRollerState extends State<DiceRoller> {
 
   incrementThreshold() {
     setState(() {
-      if (skillValue < 10) {
-        skillValue++;
-        currentResult = -1;
-      }
+      skillValue++;
+      currentResult = -1;
     });
   }
 
   decrementThreshold() {
     setState(() {
-      if (skillValue > 0) {
         skillValue--;
         currentResult = -1;
-      }
     });
   }
 
@@ -68,10 +64,12 @@ class DiceRollerState extends State<DiceRoller> {
       var random = Random();
       for (int i = 0; i < attributeValue; i++) {
         int roll = random.nextInt(10) + 1;
-        if (roll >= 10 - skillValue) {
+        // 1 is always a failure :'(
+        if (roll >= 10 - skillValue && roll != 1) {
           currentResult++;
         }
-        if (roll == 10) {
+        // 10 is a crit. If your skill is higher than 10, then you get crits more easily
+        if (roll == 10 || (skillValue > 10 && roll >= 20 - skillValue)) {
           tenCount++;
         }
 
@@ -79,10 +77,21 @@ class DiceRollerState extends State<DiceRoller> {
       }
 
       valueJustUpdated = true;
-      rollDetails = rollDetails.substring(0, rollDetails.length - 2);
+
+      if(attributeValue == 0) {
+        rollDetails = "∅";
+      }
+      else {
+        rollDetails = rollDetails.substring(0, rollDetails.length - 2);
+      }
 
       // Add to history
-      history.insert(0, Choice(attributeValue: attributeValue, skillValue: skillValue, result: currentResult));
+      history.insert(
+          0,
+          Choice(
+              attributeValue: attributeValue,
+              skillValue: skillValue,
+              result: currentResult));
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -105,7 +114,7 @@ class DiceRollerState extends State<DiceRoller> {
           currentValue: skillValue,
           incrementFn: incrementThreshold,
           decrementFn: decrementThreshold,
-          maximum: 10),
+          maximum: 18),
       Row(children: <Widget>[
         Expanded(
             child: RaisedButton(
@@ -138,14 +147,19 @@ class DiceRollerState extends State<DiceRoller> {
             )),
       ]);
     } else {
-      List<charts.Series> seriesValues =
-          DiceRollStat.createDiceData(attributeValue, skillValue / 10);
+      List<charts.Series> seriesValues = DiceRollStat.createDiceData(
+          attributeValue, min(9, max(1, skillValue)) / 10);
+
       double critProba = 1;
       if (attributeValue < 3) {
         critProba = 0;
       } else {
         for (int i = 0; i < 3; i++) {
-          critProba -= DiceRollStat.getStats(attributeValue, 1 / 10, i);
+          double critOn = 1 / 10;
+          if (skillValue > 10) {
+            critOn = (skillValue - 9) / 10;
+          }
+          critProba -= DiceRollStat.getStats(attributeValue, critOn, i);
         }
       }
 
@@ -156,7 +170,7 @@ class DiceRollerState extends State<DiceRoller> {
     }
 
     List<Widget> actions = [];
-    if(history.length > 0) {
+    if (history.length > 0) {
       actions = [
         PopupMenuButton<Choice>(
           icon: Icon(Icons.history),
@@ -164,20 +178,24 @@ class DiceRollerState extends State<DiceRoller> {
           itemBuilder: (BuildContext context) {
             return history.map((Choice choice) {
               return PopupMenuItem<Choice>(
-                value: choice,
-                child: RichText(
-                  text: TextSpan(
-                    // Note: Styles for TextSpans must be explicitly defined.
-                    // Child text spans will inherit styles from parent
-                    style: Theme.of(context).textTheme.body1,
-                    children: <TextSpan>[
-                      TextSpan(text: choice.getName()),
-                      TextSpan(text: ' '),
-                      new TextSpan(text: choice.getResult(), style: Theme.of(context).textTheme.body1.copyWith(fontSize: 12, color: Colors.black26)),
-                    ],
-                  ),
-                )
-              );
+                  value: choice,
+                  child: RichText(
+                    text: TextSpan(
+                      // Note: Styles for TextSpans must be explicitly defined.
+                      // Child text spans will inherit styles from parent
+                      style: Theme.of(context).textTheme.body1,
+                      children: <TextSpan>[
+                        TextSpan(text: choice.getName()),
+                        TextSpan(text: ' '),
+                        new TextSpan(
+                            text: choice.getResult(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .body1
+                                .copyWith(fontSize: 12, color: Colors.black26)),
+                      ],
+                    ),
+                  ));
             }).toList();
           },
         ),
@@ -207,7 +225,6 @@ class DiceRollerState extends State<DiceRoller> {
   }
 }
 
-
 class Choice {
   const Choice({this.attributeValue, this.skillValue, this.result});
 
@@ -224,7 +241,6 @@ class Choice {
     return '(' + result.toString() + ')';
   }
 }
-
 
 class DiceRoller extends StatefulWidget {
   @override
