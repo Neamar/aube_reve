@@ -293,7 +293,9 @@ file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/as
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/bitmap_canvas.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/browser_detection.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/browser_location.dart
+file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/color_filter.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/compositor/canvas.dart
+file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/compositor/color_filter.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/compositor/engine_delegate.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/compositor/fonts.dart
 file:///home/neamar/Apps/flutter/bin/cache/flutter_web_sdk/lib/_engine/engine/compositor/image.dart
@@ -415,6 +417,7 @@ file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/colors.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/constants.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/date_picker.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/dialog.dart
+file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/icon_theme_data.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/icons.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/interface_level.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/localizations.dart
@@ -426,6 +429,7 @@ file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/route.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/scrollbar.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/segmented_control.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/slider.dart
+file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/sliding_segmented_control.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/switch.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/tab_scaffold.dart
 file:///home/neamar/Apps/flutter/packages/flutter/lib/src/cupertino/tab_view.dart
