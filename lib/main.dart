@@ -69,7 +69,7 @@ class DiceRollerState extends State<DiceRoller> {
           currentResult++;
         }
         // 10 is a crit. If your skill is higher than 10, then you get crits more easily
-        if (roll == 10 || (skillValue > 10 && roll >= 20 - skillValue)) {
+        if (roll == 10 || (skillValue >= 10 && roll >= 19 - skillValue)) {
           tenCount++;
         }
 
@@ -156,8 +156,8 @@ class DiceRollerState extends State<DiceRoller> {
       } else {
         for (int i = 0; i < 3; i++) {
           double critOn = 1 / 10;
-          if (skillValue > 10) {
-            critOn = (skillValue - 9) / 10;
+          if (skillValue >= 10) {
+            critOn = (skillValue - 8) / 10;
           }
           critProba -= DiceRollStat.getStats(attributeValue, critOn, i);
         }
