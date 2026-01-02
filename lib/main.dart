@@ -1,18 +1,24 @@
 import 'dart:math';
 
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
 void main() => runApp(AubeReveApp());
 
 class AubeReveApp extends StatelessWidget {
+  const AubeReveApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Aube Rêve',
-        home: DiceRoller(),
+        home: const DiceRoller(),
         theme: ThemeData(
-            primaryColor: Colors.purple, backgroundColor: Colors.purpleAccent));
+            primaryColor: Colors.purple,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.purple,
+              surface: Colors.purpleAccent,
+            )));
   }
 }
 
@@ -117,11 +123,13 @@ class DiceRollerState extends State<DiceRoller> {
           maximum: 18),
       Row(children: <Widget>[
         Expanded(
-            child: RaisedButton(
-          color: Theme.of(context).primaryColor,
-          textColor: Colors.white,
-          child: Text("Roll"),
+            child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Colors.white,
+          ),
           onPressed: doRoll,
+          child: const Text("Roll"),
         ))
       ]),
     ];
@@ -131,8 +139,8 @@ class DiceRollerState extends State<DiceRoller> {
         Expanded(
             child: Center(
                 child: AnimatedDefaultTextStyle(
-          duration: new Duration(milliseconds: 200),
-          style: Theme.of(context).textTheme.display1.copyWith(
+          duration: const Duration(milliseconds: 200),
+          style: Theme.of(context).textTheme.headlineMedium!.copyWith(
               fontSize: valueJustUpdated ? 135 : 100,
               color: tenCount >= 3 ? Colors.purpleAccent : Colors.black),
           child: Text('$currentResult', textAlign: TextAlign.center),
@@ -147,7 +155,7 @@ class DiceRollerState extends State<DiceRoller> {
             )),
       ]);
     } else {
-      List<charts.Series> seriesValues = DiceRollStat.createDiceData(
+      List<charts.Series<DiceRollStat, String>> seriesValues = DiceRollStat.createDiceData(
           attributeValue, min(9, max(1, skillValue)) / 10);
 
       double critProba = 1;
@@ -183,16 +191,16 @@ class DiceRollerState extends State<DiceRoller> {
                     text: TextSpan(
                       // Note: Styles for TextSpans must be explicitly defined.
                       // Child text spans will inherit styles from parent
-                      style: Theme.of(context).textTheme.body1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                       children: <TextSpan>[
                         TextSpan(text: choice.getName()),
-                        TextSpan(text: ' '),
-                        new TextSpan(
+                        const TextSpan(text: ' '),
+                        TextSpan(
                             text: choice.getResult(),
                             style: Theme.of(context)
                                 .textTheme
-                                .body1
-                                .copyWith(fontSize: 12, color: Colors.black26)),
+                                .bodyLarge
+                                ?.copyWith(fontSize: 12, color: Colors.black26)),
                       ],
                     ),
                   ));
@@ -226,51 +234,53 @@ class DiceRollerState extends State<DiceRoller> {
 }
 
 class Choice {
-  const Choice({this.attributeValue, this.skillValue, this.result});
+  const Choice({required this.attributeValue, required this.skillValue, required this.result});
 
   final int attributeValue;
   final int skillValue;
-
   final int result;
 
   String getName() {
-    return attributeValue.toString() + ' / ' + skillValue.toString();
+    return '$attributeValue / $skillValue';
   }
 
   String getResult() {
-    return '(' + result.toString() + ')';
+    return '($result)';
   }
 }
 
 class DiceRoller extends StatefulWidget {
+  const DiceRoller({super.key});
+
   @override
   DiceRollerState createState() => DiceRollerState();
 }
 
 class Counter extends StatelessWidget {
-  final incrementFn;
-  final decrementFn;
-  final title;
-  final currentValue;
-  final maximum;
+  final VoidCallback? incrementFn;
+  final VoidCallback? decrementFn;
+  final String title;
+  final int currentValue;
+  final int maximum;
 
-  Counter(
-      {@required this.title,
-      @required this.currentValue,
-      @required this.incrementFn,
-      @required this.decrementFn,
+  const Counter(
+      {super.key,
+      required this.title,
+      required this.currentValue,
+      required this.incrementFn,
+      required this.decrementFn,
       this.maximum = 50});
 
   @override
   Widget build(BuildContext context) {
     return Column(children: <Widget>[
       Text(
-        '$title',
+        title,
         style: DefaultTextStyle.of(context).style.apply(fontSizeFactor: 0.75),
       ),
       Row(
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             onPressed: currentValue > 0 ? decrementFn : null,
             child: const Text('-'),
           ),
@@ -278,10 +288,10 @@ class Counter extends StatelessWidget {
             child: Text(
               '$currentValue',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.display2,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
-          RaisedButton(
+          ElevatedButton(
             onPressed: currentValue < maximum ? incrementFn : null,
             child: const Text('+', style: TextStyle(fontSize: 20)),
           ),
@@ -292,34 +302,36 @@ class Counter extends StatelessWidget {
 }
 
 class SimpleBarChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
+  final List<charts.Series<dynamic, String>> seriesList;
   final double critProba;
 
-  SimpleBarChart(this.seriesList, this.critProba);
+  const SimpleBarChart(this.seriesList, this.critProba, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: new charts.BarChart(
+        child: charts.BarChart(
       seriesList,
       animate: true,
-      primaryMeasureAxis: new charts.NumericAxisSpec(
+      primaryMeasureAxis: const charts.NumericAxisSpec(
           tickProviderSpec: charts.BasicNumericTickProviderSpec(
             desiredTickCount: 5,
           ),
           tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-              (n) => n == 100 ? '100' : (n.round().toString() + "%")),
+              _formatPercent),
           viewport: charts.NumericExtents(0, 100)),
       behaviors: [
-        new charts.ChartTitle(
-            'Critique : ' + (100 * critProba).toStringAsFixed(2) + '%',
+        charts.ChartTitle(
+            'Critique : ${(100 * critProba).toStringAsFixed(2)}%',
             behaviorPosition: charts.BehaviorPosition.bottom,
-            titleStyleSpec: charts.TextStyleSpec(fontSize: 8),
+            titleStyleSpec: const charts.TextStyleSpec(fontSize: 8),
             titleOutsideJustification:
                 charts.OutsideJustification.middleDrawArea),
       ],
     ));
   }
+
+  static String _formatPercent(num? n) => n == 100 ? '100' : '${n?.round()}%';
 }
 
 /// Sample ordinal data type.
@@ -340,21 +352,21 @@ class DiceRollStat {
 
   static double getStats(
       int diceCount, double successProbability, int expectedSuccess) {
-    return combine(diceCount, expectedSuccess) *
+    return (combine(diceCount, expectedSuccess) *
         pow(successProbability, expectedSuccess) *
-        pow(1 - successProbability, diceCount - expectedSuccess);
+        pow(1 - successProbability, diceCount - expectedSuccess)).toDouble();
   }
 
   static List<charts.Series<DiceRollStat, String>> createDiceData(
       int diceCount, double successProbability) {
     final List<DiceRollStat> data = [];
     for (int i = 0; i <= diceCount; i++) {
-      data.add(new DiceRollStat(
+      data.add(DiceRollStat(
           i.toString(), getStats(diceCount, successProbability, i)));
     }
 
     return [
-      new charts.Series<DiceRollStat, String>(
+      charts.Series<DiceRollStat, String>(
         id: 'Stats',
         colorFn: (_, __) => charts.MaterialPalette.gray.shadeDefault,
         domainFn: (DiceRollStat diceStat, _) => diceStat.success,
