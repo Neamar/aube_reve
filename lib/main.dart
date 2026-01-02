@@ -157,7 +157,7 @@ class DiceRollerState extends State<DiceRoller> {
             )),
         Text(rollDetails,
             style: TextStyle(
-              fontSize: 8,
+              fontSize: 12,
             )),
       ]);
     } else {
@@ -330,7 +330,7 @@ class SimpleBarChart extends StatelessWidget {
         charts.ChartTitle(
             'Critique : ${(100 * critProba).toStringAsFixed(2)}%',
             behaviorPosition: charts.BehaviorPosition.bottom,
-            titleStyleSpec: const charts.TextStyleSpec(fontSize: 8),
+            titleStyleSpec: const charts.TextStyleSpec(fontSize: 12),
             titleOutsideJustification:
                 charts.OutsideJustification.middleDrawArea),
       ],
