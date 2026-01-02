@@ -15,9 +15,13 @@ class AubeReveApp extends StatelessWidget {
         home: const DiceRoller(),
         theme: ThemeData(
             primaryColor: Colors.purple,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.purple,
+              foregroundColor: Colors.white,
+            ),
             colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.purple,
-              surface: Colors.purpleAccent,
+              brightness: Brightness.light,
             )));
   }
 }
