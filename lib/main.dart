@@ -294,7 +294,7 @@ class Counter extends StatelessWidget {
             child: Text(
               '$currentValue',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall,
+              style: Theme.of(context).textTheme.headlineLarge,
             ),
           ),
           ElevatedButton(
