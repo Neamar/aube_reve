@@ -323,6 +323,7 @@ class SimpleBarChart extends StatefulWidget {
 class _SimpleBarChartState extends State<SimpleBarChart> {
   String? selectedSuccess;
   double? selectedProba;
+  Offset? tapPosition;
 
   void _onSelectionChanged(charts.SelectionModel model) {
     final selectedDatum = model.selectedDatum;
@@ -341,42 +342,67 @@ class _SimpleBarChartState extends State<SimpleBarChart> {
       child: Column(
         children: [
           Expanded(
-            child: charts.BarChart(
-              widget.seriesList,
-              animate: true,
-              primaryMeasureAxis: const charts.NumericAxisSpec(
-                tickProviderSpec: charts.BasicNumericTickProviderSpec(
-                  desiredTickCount: 5,
-                ),
-                tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-                    SimpleBarChart._formatPercent),
-                viewport: charts.NumericExtents(0, 100),
-              ),
-              selectionModels: [
-                charts.SelectionModelConfig(
-                  type: charts.SelectionModelType.info,
-                  changedListener: _onSelectionChanged,
-                ),
-              ],
-              behaviors: [
-                charts.ChartTitle(
-                  'Critique : ${(100 * widget.critProba).toStringAsFixed(2)}%',
-                  behaviorPosition: charts.BehaviorPosition.bottom,
-                  titleStyleSpec: const charts.TextStyleSpec(fontSize: 12),
-                  titleOutsideJustification:
-                      charts.OutsideJustification.middleDrawArea,
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return GestureDetector(
+                  onTapDown: (details) {
+                    setState(() {
+                      tapPosition = details.localPosition;
+                    });
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      charts.BarChart(
+                        widget.seriesList,
+                        animate: true,
+                        primaryMeasureAxis: const charts.NumericAxisSpec(
+                          tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                            desiredTickCount: 5,
+                          ),
+                          tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                              SimpleBarChart._formatPercent),
+                          viewport: charts.NumericExtents(0, 100),
+                        ),
+                        selectionModels: [
+                          charts.SelectionModelConfig(
+                            type: charts.SelectionModelType.info,
+                            changedListener: _onSelectionChanged,
+                          ),
+                        ],
+                        behaviors: [
+                          charts.ChartTitle(
+                            'Critique : ${(100 * widget.critProba).toStringAsFixed(2)}%',
+                            behaviorPosition: charts.BehaviorPosition.bottom,
+                            titleStyleSpec: const charts.TextStyleSpec(fontSize: 12),
+                            titleOutsideJustification:
+                                charts.OutsideJustification.middleDrawArea,
+                          ),
+                          charts.DomainHighlighter(),
+                        ],
+                      ),
+                      if (selectedSuccess != null && selectedProba != null && tapPosition != null)
+                        Positioned(
+                          left: (tapPosition!.dx - 60).clamp(0, constraints.maxWidth - 120),
+                          top: (tapPosition!.dy - 45).clamp(0, constraints.maxHeight - 40),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '$selectedSuccess réussite${selectedSuccess != "1" ? "s" : ""} : ${(100 * selectedProba!).toStringAsFixed(2)}%',
+                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
-          if (selectedSuccess != null && selectedProba != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                '$selectedSuccess réussite${selectedSuccess != "1" ? "s" : ""} : ${(100 * selectedProba!).toStringAsFixed(2)}%',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
         ],
       ),
     );
