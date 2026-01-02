@@ -308,37 +308,79 @@ class Counter extends StatelessWidget {
   }
 }
 
-class SimpleBarChart extends StatelessWidget {
+class SimpleBarChart extends StatefulWidget {
   final List<charts.Series<dynamic, String>> seriesList;
   final double critProba;
 
   const SimpleBarChart(this.seriesList, this.critProba, {super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-        child: charts.BarChart(
-      seriesList,
-      animate: true,
-      primaryMeasureAxis: const charts.NumericAxisSpec(
-          tickProviderSpec: charts.BasicNumericTickProviderSpec(
-            desiredTickCount: 5,
-          ),
-          tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-              _formatPercent),
-          viewport: charts.NumericExtents(0, 100)),
-      behaviors: [
-        charts.ChartTitle(
-            'Critique : ${(100 * critProba).toStringAsFixed(2)}%',
-            behaviorPosition: charts.BehaviorPosition.bottom,
-            titleStyleSpec: const charts.TextStyleSpec(fontSize: 12),
-            titleOutsideJustification:
-                charts.OutsideJustification.middleDrawArea),
-      ],
-    ));
-  }
+  State<SimpleBarChart> createState() => _SimpleBarChartState();
 
   static String _formatPercent(num? n) => n == 100 ? '100' : '${n?.round()}%';
+}
+
+class _SimpleBarChartState extends State<SimpleBarChart> {
+  String? selectedSuccess;
+  double? selectedProba;
+
+  void _onSelectionChanged(charts.SelectionModel model) {
+    final selectedDatum = model.selectedDatum;
+    if (selectedDatum.isNotEmpty) {
+      final datum = selectedDatum.first.datum as DiceRollStat;
+      setState(() {
+        selectedSuccess = datum.success;
+        selectedProba = datum.proba;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          Expanded(
+            child: charts.BarChart(
+              widget.seriesList,
+              animate: true,
+              primaryMeasureAxis: const charts.NumericAxisSpec(
+                tickProviderSpec: charts.BasicNumericTickProviderSpec(
+                  desiredTickCount: 5,
+                ),
+                tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                    SimpleBarChart._formatPercent),
+                viewport: charts.NumericExtents(0, 100),
+              ),
+              selectionModels: [
+                charts.SelectionModelConfig(
+                  type: charts.SelectionModelType.info,
+                  changedListener: _onSelectionChanged,
+                ),
+              ],
+              behaviors: [
+                charts.ChartTitle(
+                  'Critique : ${(100 * widget.critProba).toStringAsFixed(2)}%',
+                  behaviorPosition: charts.BehaviorPosition.bottom,
+                  titleStyleSpec: const charts.TextStyleSpec(fontSize: 12),
+                  titleOutsideJustification:
+                      charts.OutsideJustification.middleDrawArea,
+                ),
+              ],
+            ),
+          ),
+          if (selectedSuccess != null && selectedProba != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                '$selectedSuccess réussite${selectedSuccess != "1" ? "s" : ""} : ${(100 * selectedProba!).toStringAsFixed(2)}%',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Sample ordinal data type.
