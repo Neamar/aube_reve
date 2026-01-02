@@ -15,6 +15,7 @@ class AubeReveApp extends StatelessWidget {
         home: const DiceRoller(),
         theme: ThemeData(
             primaryColor: Colors.purple,
+            scaffoldBackgroundColor: Colors.white,
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.purple,
               foregroundColor: Colors.white,
@@ -125,6 +126,7 @@ class DiceRollerState extends State<DiceRoller> {
           incrementFn: incrementThreshold,
           decrementFn: decrementThreshold,
           maximum: 18),
+      const SizedBox(height: 16),
       Row(children: <Widget>[
         Expanded(
             child: ElevatedButton(
