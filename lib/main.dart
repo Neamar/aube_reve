@@ -104,7 +104,8 @@ class DiceRollerState extends State<DiceRoller> {
           Choice(
               attributeValue: attributeValue,
               skillValue: skillValue,
-              result: currentResult));
+              result: currentResult,
+              critCount: tenCount));
     });
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -241,17 +242,21 @@ class DiceRollerState extends State<DiceRoller> {
 }
 
 class Choice {
-  const Choice({required this.attributeValue, required this.skillValue, required this.result});
+  const Choice({required this.attributeValue, required this.skillValue, required this.result, this.critCount = 0});
 
   final int attributeValue;
   final int skillValue;
   final int result;
+  final int critCount;
 
   String getName() {
     return '$attributeValue / $skillValue';
   }
 
   String getResult() {
+    if (critCount >= 3) {
+      return '(${result}C$critCount)';
+    }
     return '($result)';
   }
 }
